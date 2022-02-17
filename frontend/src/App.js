@@ -12,15 +12,16 @@ const App = () => {
   const [word, setWord] = useState("");
   const [images, setImages] = useState([]);
 
-  const handleSearchSubmit = (e) => {
+  const handleSearchSubmit = async (e) => {
     e.preventDefault();
-    fetch(`${API_URL}/new-image?query=${word}`)
-      .then((res) => res.json())
-      .then((data) => {
-        setImages([{ ...data, title: word }, ...images]);
-      })
-      .then(setWord(""))
-      .catch((err) => console.log(err));
+    const response = await fetch(`${API_URL}/new-image?query=${word}`);
+    const data = await response.json();
+    if (data.errors) {
+      alert(data.errors[0]);
+      return;
+    }
+    setImages([{ ...data, title: word }, ...images]);
+    setWord("");
   };
 
   const handleDeleteImage = (id) => {
